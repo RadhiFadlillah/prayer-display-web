@@ -143,6 +143,12 @@ func extractImageData(imgPath string) (data imageData, err error) {
 		return
 	}
 
+	// Resize image by half to make calculation faster
+	img = transform.Resize(img,
+		img.Bounds().Dx()/2,
+		img.Bounds().Dy()/2,
+		transform.NearestNeighbor)
+
 	// Crop header and footer, both is third of image height
 	imgBounds := img.Bounds()
 	imgHeight := imgBounds.Dy()
