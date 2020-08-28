@@ -8,3 +8,6 @@ prayer-display-web-dev
 
 # Exclude node modules
 /node_modules/
+
+# Exclude display images
+/display/

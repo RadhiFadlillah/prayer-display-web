@@ -32,6 +32,8 @@ html {
 	position  : relative;
 	overflow  : hidden;
 
+	--main-color: #c03f3c;
+
 	--header-main  : rgba(165, 55, 64, 0.7);
 	--header-accent: rgba(0, 219, 201, 0.7);
 	--header-color : #FFF;
@@ -44,9 +46,9 @@ html {
 #main-image {
 	display         : block;
 	object-fit      : contain;
-	background-color: #c03f3c;
 	height          : 100vh;
 	width           : 100vw;
+	background-color: var(--main-color);
 }
 
 // Header stuffs

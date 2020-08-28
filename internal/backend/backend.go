@@ -19,6 +19,7 @@ func ServeApp(port int) error {
 	router.GET("/js/*filepath", serveJsFile)
 	router.GET("/res/*filepath", serveFile)
 	router.GET("/css/*filepath", serveFile)
+	router.GET("/api/data", loadData)
 
 	// Route for panic
 	router.PanicHandler = func(w http.ResponseWriter, r *http.Request, arg interface{}) {
