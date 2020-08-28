@@ -1,0 +1,7 @@
+# Exclude config
+.vscode/
+config.toml
+
+# Exclude executable
+prayer-display-web
+prayer-display-web-dev
