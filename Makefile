@@ -6,7 +6,7 @@ BROWSER_LIST = last 2 versions, > 8%
 LESS_FLAGS = --strict-imports --clean-css --autoprefix="$(BROWSER_LIST)"
 ESBUILD_FLAGS = --bundle
 
-dev: 
+dev: less-bundle
 	@go generate
 	@go build -o prayer-display-web-dev
 
