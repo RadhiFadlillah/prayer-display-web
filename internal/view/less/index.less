@@ -61,32 +61,33 @@ html {
 	width    : 100%;
 	display  : flex;
 	flex-flow: row nowrap;
+
+	>* {
+		line-height: 4vw;
+	}
 }
 
 #clock {
 	padding         : 0 1rem;
-	font-size       : 1.5rem;
+	font-size       : 1.5vw;
 	font-weight     : bold;
-	line-height     : 4rem;
 	color           : var(--header-color);
 	background-color: var(--header-accent);
 }
 
 #date {
 	flex            : 1 0;
-	padding         : 0 0 0 1rem;
-	font-size       : 1.5rem;
+	padding         : 0 0 0 1vw;
+	font-size       : 1.5vw;
 	font-weight     : 600;
-	line-height     : 4rem;
 	color           : var(--header-color);
 	background-color: var(--header-main);
 }
 
 #countdown {
-	padding         : 0 1rem;
-	font-size       : 2rem;
+	padding         : 0 1vw;
+	font-size       : 2vw;
 	font-weight     : 600;
-	line-height     : 4rem;
 	color           : var(--header-color);
 	background-color: var(--header-main);
 }
@@ -96,7 +97,7 @@ html {
 #footer {
 	display              : grid;
 	grid-template-columns: 1fr repeat(6, auto) 1fr;
-	grid-gap             : 1rem;
+	grid-gap             : 1vw;
 	position             : absolute;
 	bottom               : 0;
 	left                 : 0;
@@ -104,7 +105,7 @@ html {
 }
 
 .event {
-	padding         : 1rem;
+	padding         : 1vw;
 	display         : flex;
 	flex-flow       : column nowrap;
 	color           : var(--footer-color);
@@ -119,19 +120,19 @@ html {
 .event__name {
 	text-align : center;
 	font-weight: 600;
-	font-size  : 1.5rem;
+	font-size  : 2vw;
 }
 
 .event__time {
 	text-align : center;
 	font-weight: bold;
-	font-size  : 3.5rem;
+	font-size  : 4vw;
 }
 
 .event__iqama {
 	text-align : center;
 	font-weight: 600;
-	font-size  : 2rem;
+	font-size  : 2vw;
 
 	&::before {
 		content: "[";
