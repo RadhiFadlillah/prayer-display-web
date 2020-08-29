@@ -141,7 +141,7 @@
       }), newTarget = state.targets.findIndex((target) => {
         return target.time > currentTime;
       });
-      if (newTarget !== state.currentTarget) {
+      if (state.currentTarget !== -1 && newTarget !== state.currentTarget) {
         state.beep.play();
       }
       state.time = currentTime;
@@ -158,10 +158,10 @@
       if (diffSeconds >= 60 * 60) {
         diffHours = Math.floor(diffSeconds / 3600);
         diffMinutes = Math.floor((diffSeconds - diffHours * 3600) / 60);
-        diffSeconds = diffSeconds - diffHours * 3600 - diffMinutes * 60;
+        diffSeconds = Math.floor(diffSeconds - diffHours * 3600 - diffMinutes * 60);
       } else if (diffSeconds >= 60) {
         diffMinutes = Math.floor(diffSeconds / 60);
-        diffSeconds = diffSeconds - diffMinutes * 60;
+        diffSeconds = Math.floor(diffSeconds - diffMinutes * 60);
       }
       if (diffHours > 0) {
         if (diffMinutes === 0)
@@ -192,6 +192,8 @@
           return "Maghrib";
         case "isha":
           return "Isha";
+        case "nextFajr":
+          return "Subuh";
       }
     }
     function getTargetName(name) {
