@@ -248,7 +248,7 @@
         let boxAttributes = {
           class: idx === state.nextEvent ? "event--target" : null,
           onclick() {
-            let eventTime = new Date(e.time.getTime() - 30 * 1e3);
+            let eventTime = new Date(e.time.getTime() - 15 * 1e3);
             state.debugMode = true;
             state.time = eventTime;
             return false;
