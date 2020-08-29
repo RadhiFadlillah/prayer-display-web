@@ -21,6 +21,8 @@ function app() {
 		nextEvent: -1,
 		activeImage: -1,
 		currentTarget: -1,
+
+		beep: null
 	}
 
 	// API methods
@@ -85,7 +87,7 @@ function app() {
 			})
 
 		if (newTarget !== state.currentTarget) {
-			// TODO: BEEEP
+			state.beep.play()
 		}
 
 		state.time = currentTime
@@ -212,6 +214,9 @@ function app() {
 			),
 		)
 
+		// For debugging, play beep on click
+		appAttributes.onclick = () => { state.beep.play() }
+
 		return m("#app", appAttributes, appContents)
 	}
 
@@ -219,6 +224,7 @@ function app() {
 		loadData()
 		startClock()
 		startImages()
+		state.beep = new Audio("/res/beep.wav")
 	}
 
 	return {

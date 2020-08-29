@@ -98,7 +98,8 @@
       targets: [],
       nextEvent: -1,
       activeImage: -1,
-      currentTarget: -1
+      currentTarget: -1,
+      beep: null
     };
     function loadData() {
       request("/api/data", "1m").then((response) => {
@@ -141,6 +142,7 @@
         return target.time > currentTime;
       });
       if (newTarget !== state.currentTarget) {
+        state.beep.play();
       }
       state.time = currentTime;
       state.nextEvent = nextEvent;
@@ -231,12 +233,16 @@
         return m(".event", {class: className}, eventContents);
       });
       appContents.push(m("#header", m("p#clock", strTime), m("p#date", `${day}, ${strDate} M / ${strHijri} H`), m("p#countdown", getCountdown())), m("#footer", m(".footer__space"), ...eventBoxes, m(".footer__space")));
+      appAttributes.onclick = () => {
+        state.beep.play();
+      };
       return m("#app", appAttributes, appContents);
     }
     function onInit() {
       loadData();
       startClock();
       startImages();
+      state.beep = new Audio("/res/beep.wav");
     }
     return {
       view: renderView,
