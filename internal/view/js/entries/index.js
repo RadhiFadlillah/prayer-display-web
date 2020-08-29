@@ -8,6 +8,7 @@ import {
 	isoTimeString,
 	isoDateString,
 	isValidDate,
+	fullDate,
 } from "../libs/datetime.js"
 
 function app() {
@@ -167,8 +168,8 @@ function app() {
 		// Prepare variables
 		let day = dayName(state.time.getDay()),
 			strTime = isoTimeString(state.time, true),
-			strDate = isoDateString(state.time).replace(/\//g, "-"),
-			strHijri = hijriDate(state.time).replace(/\//g, "-"),
+			strDate = fullDate(state.time),
+			strHijri = hijriDate(state.time),
 			activeImage = state.images[state.activeImage],
 			appAttributes = {},
 			appContents = []

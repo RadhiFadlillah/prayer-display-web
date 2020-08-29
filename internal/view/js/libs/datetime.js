@@ -42,11 +42,20 @@ export function dayName(day) {
 	}
 }
 
+export function fullDate(d) {
+	if (!isValidDate(d)) return ""
+	return new Intl.DateTimeFormat("id", {
+		day: "2-digit",
+		month: "long",
+		year: "numeric",
+	}).format(d).replace(/\s+M$/i, "")
+}
+
 export function hijriDate(d) {
 	if (!isValidDate(d)) return ""
 	return new Intl.DateTimeFormat("id-u-ca-islamic", {
 		day: "2-digit",
-		month: "2-digit",
-		year: "2-digit",
+		month: "long",
+		year: "numeric",
 	}).format(d).replace(/\s+H$/i, "")
 }

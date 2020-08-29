@@ -55,12 +55,6 @@
       return `${strH}:${strM}`;
     }
   }
-  function isoDateString(d) {
-    if (!isValidDate(d))
-      return "";
-    let date = String(d.getDate()).padStart(2, "0"), month = String(d.getMonth() + 1).padStart(2, "0"), year = d.getFullYear();
-    return `${year}-${month}-${date}`;
-  }
   function dayName(day) {
     switch (day) {
       case 0:
@@ -79,13 +73,22 @@
         return "Sabtu";
     }
   }
+  function fullDate(d) {
+    if (!isValidDate(d))
+      return "";
+    return new Intl.DateTimeFormat("id", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    }).format(d).replace(/\s+M$/i, "");
+  }
   function hijriDate(d) {
     if (!isValidDate(d))
       return "";
     return new Intl.DateTimeFormat("id-u-ca-islamic", {
       day: "2-digit",
-      month: "2-digit",
-      year: "2-digit"
+      month: "long",
+      year: "numeric"
     }).format(d).replace(/\s+H$/i, "");
   }
 
@@ -210,7 +213,7 @@
       return prefix + getEventName(name);
     }
     function renderView() {
-      let day = dayName(state.time.getDay()), strTime = isoTimeString(state.time, true), strDate = isoDateString(state.time).replace(/\//g, "-"), strHijri = hijriDate(state.time).replace(/\//g, "-"), activeImage = state.images[state.activeImage], appAttributes = {}, appContents = [];
+      let day = dayName(state.time.getDay()), strTime = isoTimeString(state.time, true), strDate = fullDate(state.time), strHijri = hijriDate(state.time), activeImage = state.images[state.activeImage], appAttributes = {}, appContents = [];
       if (activeImage != null) {
         appContents = [
           m("img#main-image", {
