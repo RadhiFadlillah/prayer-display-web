@@ -22,7 +22,8 @@ function app() {
 		activeImage: -1,
 		currentTarget: -1,
 
-		beep: null
+		beep: null,
+		debugMode: false,
 	}
 
 	// API methods
@@ -77,22 +78,29 @@ function app() {
 	}
 
 	function startClock() {
-		let currentTime = new Date(),
-			nextEvent = state.events.findIndex(event => {
-				let iqamaTime = event.iqama || event.time
-				return event.time > currentTime || iqamaTime > currentTime
-			}),
-			newTarget = state.targets.findIndex(target => {
-				return target.time > currentTime
-			})
-
-		if (state.currentTarget !== -1 && newTarget !== state.currentTarget) {
-			state.beep.play()
+		// Calculate current time
+		if (state.debugMode) {
+			state.time.setSeconds(state.time.getSeconds() + 1)
+		} else {
+			state.time = new Date()
 		}
 
-		state.time = currentTime
-		state.nextEvent = nextEvent
-		state.currentTarget = newTarget
+		// Find next event
+		state.nextEvent = state.events.findIndex(event => {
+			let iqamaTime = event.iqama || event.time
+			return event.time > state.time || iqamaTime > state.time
+		})
+
+		// Find next target
+		let oldTarget = state.currentTarget
+		state.currentTarget = state.targets.findIndex(target => {
+			return target.time > state.time
+		})
+
+		// If target changed trigger the alarm
+		if (oldTarget !== -1 && state.currentTarget !== oldTarget) {
+			state.beep.play()
+		}
 
 		m.redraw()
 		setTimeout(startClock, 1000)
@@ -183,23 +191,39 @@ function app() {
 					"--footer-main": activeImage.footerMain,
 					"--footer-accent": activeImage.footerAccent,
 					"--footer-color": activeImage.footerFont,
+				},
+				onclick() {
+					state.debugMode = false
+					state.time = new Date()
+					return false
 				}
 			}
 		}
 
 		// Populate app contents
 		let eventBoxes = state.events.map((e, idx) => {
-			let className = idx === state.nextEvent ? "event--target" : null,
-				eventContents = [
-					m("p.event__name", getEventName(e.name)),
-					m("p.event__time", isoTimeString(e.time)),
-				]
+			// Prepare box contents
+			let boxContents = [
+				m("p.event__name", getEventName(e.name)),
+				m("p.event__time", isoTimeString(e.time)),
+			]
 
-			if (isValidDate(e.iqama)) eventContents.push(
+			if (isValidDate(e.iqama)) boxContents.push(
 				m("p.event__iqama", isoTimeString(e.iqama)),
 			)
 
-			return m(".event", { class: className }, eventContents)
+			// Prepare box attributes
+			let boxAttributes = {
+				class: idx === state.nextEvent ? "event--target" : null,
+				onclick() {
+					let eventTime = new Date(e.time.getTime() - 30 * 1000)
+					state.debugMode = true
+					state.time = eventTime
+					return false
+				}
+			}
+
+			return m(".event", boxAttributes, boxContents)
 		})
 
 		appContents.push(
@@ -214,9 +238,6 @@ function app() {
 				m(".footer__space"),
 			),
 		)
-
-		// Useful for debugging, play beep on click
-		appAttributes.onclick = () => { state.beep.play() }
 
 		return m("#app", appAttributes, appContents)
 	}

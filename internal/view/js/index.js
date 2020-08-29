@@ -99,7 +99,8 @@
       nextEvent: -1,
       activeImage: -1,
       currentTarget: -1,
-      beep: null
+      beep: null,
+      debugMode: false
     };
     function loadData() {
       request("/api/data", "1m").then((response) => {
@@ -135,18 +136,22 @@
       setTimeout(startImages, 20 * 1e3);
     }
     function startClock() {
-      let currentTime = new Date(), nextEvent = state.events.findIndex((event) => {
+      if (state.debugMode) {
+        state.time.setSeconds(state.time.getSeconds() + 1);
+      } else {
+        state.time = new Date();
+      }
+      state.nextEvent = state.events.findIndex((event) => {
         let iqamaTime = event.iqama || event.time;
-        return event.time > currentTime || iqamaTime > currentTime;
-      }), newTarget = state.targets.findIndex((target) => {
-        return target.time > currentTime;
+        return event.time > state.time || iqamaTime > state.time;
       });
-      if (state.currentTarget !== -1 && newTarget !== state.currentTarget) {
+      let oldTarget = state.currentTarget;
+      state.currentTarget = state.targets.findIndex((target) => {
+        return target.time > state.time;
+      });
+      if (oldTarget !== -1 && state.currentTarget !== oldTarget) {
         state.beep.play();
       }
-      state.time = currentTime;
-      state.nextEvent = nextEvent;
-      state.currentTarget = newTarget;
       m.redraw();
       setTimeout(startClock, 1e3);
     }
@@ -222,22 +227,33 @@
             "--footer-main": activeImage.footerMain,
             "--footer-accent": activeImage.footerAccent,
             "--footer-color": activeImage.footerFont
+          },
+          onclick() {
+            state.debugMode = false;
+            state.time = new Date();
+            return false;
           }
         };
       }
       let eventBoxes = state.events.map((e, idx) => {
-        let className = idx === state.nextEvent ? "event--target" : null, eventContents = [
+        let boxContents = [
           m("p.event__name", getEventName(e.name)),
           m("p.event__time", isoTimeString(e.time))
         ];
         if (isValidDate(e.iqama))
-          eventContents.push(m("p.event__iqama", isoTimeString(e.iqama)));
-        return m(".event", {class: className}, eventContents);
+          boxContents.push(m("p.event__iqama", isoTimeString(e.iqama)));
+        let boxAttributes = {
+          class: idx === state.nextEvent ? "event--target" : null,
+          onclick() {
+            let eventTime = new Date(e.time.getTime() - 30 * 1e3);
+            state.debugMode = true;
+            state.time = eventTime;
+            return false;
+          }
+        };
+        return m(".event", boxAttributes, boxContents);
       });
       appContents.push(m("#header", m("p#clock", strTime), m("p#date", `${day}, ${strDate} M / ${strHijri} H`), m("p#countdown", getCountdown())), m("#footer", m(".footer__space"), ...eventBoxes, m(".footer__space")));
-      appAttributes.onclick = () => {
-        state.beep.play();
-      };
       return m("#app", appAttributes, appContents);
     }
     function onInit() {
