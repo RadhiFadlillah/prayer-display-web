@@ -14,6 +14,14 @@ prod: js-bundle less-bundle
 	@go generate
 	@go build -tags prod
 
+pi: js-bundle less-bundle
+	@go generate
+	@env GOOS=linux GOARCH=arm GOARM=7 go build -tags prod -o prayer-display-web-arm7
+
+pi-zero: js-bundle less-bundle
+	@go generate
+	@env GOOS=linux GOARCH=arm GOARM=6 go build -tags prod -o prayer-display-web-arm6
+
 js-bundle:
 	@npx esbuild --bundle --outdir="$(JS_DIR)" "$(JS_DIR)/entries/index.js"
 	@npx esbuild --bundle --minify --outfile="$(JS_DIR)/index.min.js" "$(JS_DIR)/entries/index.js"

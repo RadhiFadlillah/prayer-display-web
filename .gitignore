@@ -5,6 +5,8 @@ config.toml
 # Exclude executable
 prayer-display-web
 prayer-display-web-dev
+prayer-display-web-arm6
+prayer-display-web-arm7
 
 # Exclude node modules
 /node_modules/
