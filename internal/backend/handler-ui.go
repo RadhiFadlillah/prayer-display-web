@@ -17,6 +17,8 @@ var presetMimeTypes = map[string]string{
 	".css":  "text/css; charset=utf-8",
 	".html": "text/html; charset=utf-8",
 	".js":   "application/javascript",
+	".jpeg": "image/jpeg",
+	".jpg":  "image/jpeg",
 	".png":  "image/png",
 }
 
@@ -48,6 +50,19 @@ func serveJsFile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func serveIndex(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	err := serveAssets(w, r, "index.html")
 	checkError(err)
+}
+
+// serveImage serves the image file at /image/:name
+func serveImage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Get executable directory
+	exePath, err := os.Executable()
+	checkError(err)
+
+	// Serve image
+	fName := ps.ByName("name")
+	exeDir := fp.Dir(exePath)
+	imgPath := fp.Join(exeDir, "display", fName)
+	http.ServeFile(w, r, imgPath)
 }
 
 func serveAssets(w http.ResponseWriter, r *http.Request, filePath string) error {

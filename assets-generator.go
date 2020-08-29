@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	fp "path/filepath"
+	"strings"
 
 	"github.com/shurcooL/httpfs/filter"
 	"github.com/shurcooL/vfsgen"
@@ -14,11 +15,12 @@ import (
 
 func main() {
 	fs := filter.Skip(http.Dir("internal/view"), func(path string, fi os.FileInfo) bool {
+		fileName := fi.Name()
 		fileDir := fp.Dir(path)
-		fileExt := fp.Ext(fi.Name())
+		fileExt := fp.Ext(fileName)
 
-		// Exclude JS file that not inside JS root dir
-		if fileExt == ".js" && fileDir != "/js" {
+		// Exclude JS file that not minified and not in root dir
+		if fileExt == ".js" && fileDir != "/js" && !strings.HasSuffix(fileName, ".min.js") {
 			return true
 		}
 

@@ -7,7 +7,6 @@ import (
 	"net"
 	"os"
 	"syscall"
-	"time"
 
 	"github.com/lucasb-eyer/go-colorful"
 	ce "github.com/marekm4/color-extractor"
@@ -29,10 +28,6 @@ func checkError(err error) {
 	}
 
 	panic(err)
-}
-
-func unixMilli(t time.Time) int64 {
-	return t.UnixNano() / int64(time.Millisecond)
 }
 
 func getDominantColor(img image.Image) colorful.Color {

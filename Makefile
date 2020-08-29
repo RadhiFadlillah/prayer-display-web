@@ -6,9 +6,9 @@ BROWSER_LIST = last 2 versions, > 8%
 LESS_FLAGS = --strict-imports --clean-css --autoprefix="$(BROWSER_LIST)"
 ESBUILD_FLAGS = --bundle
 
-dev: less-bundle
+dev: js-bundle less-bundle
 	@go generate
-	@go build -o prayer-display-web-dev
+	@go build -tags dev -o prayer-display-web-dev
 
 prod: js-bundle less-bundle
 	@go generate
@@ -16,7 +16,7 @@ prod: js-bundle less-bundle
 
 js-bundle:
 	@npx esbuild --bundle --outdir="$(JS_DIR)" "$(JS_DIR)/entries/index.js"
-	@npx esbuild --bundle --minify --outdir="$(JS_DIR)" "$(JS_DIR)/entries/index.js"
+	@npx esbuild --bundle --minify --outfile="$(JS_DIR)/index.min.js" "$(JS_DIR)/entries/index.js"
 
 less-bundle:
 	@npx lessc $(LESS_FLAGS) "$(LESS_DIR)/index.less" "$(CSS_DIR)/index.css"

@@ -16,6 +16,7 @@ func ServeApp(port int) error {
 	// Create router
 	router := httprouter.New()
 	router.GET("/", serveIndex)
+	router.GET("/image/:name", serveImage)
 	router.GET("/js/*filepath", serveJsFile)
 	router.GET("/res/*filepath", serveFile)
 	router.GET("/css/*filepath", serveFile)

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path"
 	fp "path/filepath"
 	"time"
 
@@ -16,19 +17,17 @@ import (
 )
 
 type event struct {
-	Name string `json:"name"`
-	Time int64  `json:"time"`
+	Name  string `json:"name"`
+	Time  int64  `json:"time"`
+	Iqama int64  `json:"iqama,omitempty"`
 }
 
 type imageData struct {
-	Path string `json:"path"`
-
-	MainColor string `json:"mainColor"`
-
+	URL          string `json:"url"`
+	MainColor    string `json:"mainColor"`
 	HeaderMain   string `json:"headerMain"`
 	HeaderAccent string `json:"headerAccent"`
 	HeaderFont   string `json:"headerFont"`
-
 	FooterMain   string `json:"footerMain"`
 	FooterAccent string `json:"footerAccent"`
 	FooterFont   string `json:"footerFont"`
@@ -43,7 +42,7 @@ func loadData(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 
 	// Encode to json
 	data := struct {
-		Times  []event     `json:"times"`
+		Events []event     `json:"events"`
 		Images []imageData `json:"images"`
 	}{times, images}
 
@@ -85,18 +84,13 @@ func getEventTimes() []event {
 	iqamahIsha := isha.Add(10 * time.Minute)
 
 	return []event{
-		{Name: "fajr", Time: unixMilli(fajr)},
-		{Name: "iqamahFajr", Time: unixMilli(iqamahFajr)},
-		{Name: "sunrise", Time: unixMilli(sunrise)},
-		{Name: "zuhr", Time: unixMilli(zuhr)},
-		{Name: "iqamahZuhr", Time: unixMilli(iqamahZuhr)},
-		{Name: "asr", Time: unixMilli(asr)},
-		{Name: "iqamahAsr", Time: unixMilli(iqamahAsr)},
-		{Name: "maghrib", Time: unixMilli(maghrib)},
-		{Name: "iqamahMaghrib", Time: unixMilli(iqamahMaghrib)},
-		{Name: "isha", Time: unixMilli(isha)},
-		{Name: "iqamahIsha", Time: unixMilli(iqamahIsha)},
-		{Name: "nextFajr", Time: unixMilli(nextFajr)},
+		createEvent("fajr", fajr, iqamahFajr),
+		createEvent("sunrise", sunrise),
+		createEvent("zuhr", zuhr, iqamahZuhr),
+		createEvent("asr", asr, iqamahAsr),
+		createEvent("maghrib", maghrib, iqamahMaghrib),
+		createEvent("isha", isha, iqamahIsha),
+		createEvent("nextFajr", nextFajr),
 	}
 }
 
@@ -120,7 +114,7 @@ func loadImages() ([]imageData, error) {
 	for _, f := range files {
 		fileName := f.Name()
 		fileExt := fp.Ext(fileName)
-		if fileExt != ".png" && fileExt != ".jpg" {
+		if fileExt != ".png" && fileExt != ".jpg" && fileExt != ".jpeg" {
 			continue
 		}
 
@@ -169,9 +163,12 @@ func extractImageData(imgPath string) (data imageData, err error) {
 	hMain, hAccent, hFont := getColorPalette(header)
 	fMain, fAccent, fFont := getColorPalette(footer)
 
+	// Create URL
+	imgURL := path.Join("/", "image", fp.Base(imgPath))
+
 	// Create final data
 	data = imageData{
-		Path:         imgPath,
+		URL:          imgURL,
 		MainColor:    mainColor.Hex(),
 		HeaderMain:   colorToRGBA(hMain, 0.7),
 		HeaderAccent: colorToRGBA(hAccent, 0.7),
@@ -182,4 +179,19 @@ func extractImageData(imgPath string) (data imageData, err error) {
 	}
 
 	return
+}
+
+func createEvent(name string, t time.Time, iqama ...time.Time) event {
+	msTime := t.UnixNano() / int64(time.Millisecond)
+
+	var msIqama int64
+	if len(iqama) > 0 {
+		msIqama = iqama[0].UnixNano() / int64(time.Millisecond)
+	}
+
+	return event{
+		Name:  name,
+		Time:  msTime,
+		Iqama: msIqama,
+	}
 }
